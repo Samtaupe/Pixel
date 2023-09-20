@@ -20,6 +20,7 @@ class GameType extends AbstractType{
             ->add('releaseDate', options:[ 
                 'years'=>range(1972,date('Y')+2)
             ])
+            ->add('category')
         ;
     }
 
