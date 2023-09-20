@@ -3,9 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\Game;
+use App\Form\GameType;
 use App\Repository\GameRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -23,18 +25,33 @@ class GameController extends AbstractController
 
     // Injection de dépendance: SF va m'envoyer les objets dont j'ai besoin en paramètre
     #[Route('/game/new')]
-    public function new(EntityManagerInterface $entityManager): Response
+    public function new(EntityManagerInterface $entityManager, Request $request): Response
     {
         $entity = new Game();
-        $entity->setName('Megaman');
-        $entity->setDescription('');
+        /* $entity->setName('Megaman');
+        $entity->setDescription(''); */
 
-        // Indique à Doctrine de prendre en charge cet objet
-        // Prepare la requête
-        $entityManager->persist($entity);
+        //Chargement du formulaire et envois de l'entité game pour initialiser les données
+        $form = $this->createForm(GameType::class, $entity);
+        $form->handleRequest($request);
 
-        $entityManager->flush(); // Exécute la requête
+        if($form->isSubmitted()&&$form->isValid()){
+            $entityManager->persist($entity);
+            $entityManager->flush(); // Exécute la requête
+            return $this->redirectToRoute('app_game_index');
+        }
 
-        return $this->render('game/index.html.twig', []);
+
+
+
+        return $this->render('game/new.html.twig', [
+            'gameForm' => $form->createView(),
+        ]);
     }
+    
+/*     #[Route('/game/{id<\d+>}/edit')]
+    public function edit(Game $entity):Response
+    {
+        
+    } */
 }
