@@ -15,7 +15,6 @@ class CategoryType extends AbstractType
             ->add('name')
             ->add('published')
             ->add('description')
-            ->add('category')
         ;
     }
 

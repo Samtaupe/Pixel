@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -26,6 +28,14 @@ class Game
     #[ORM\ManyToOne(inversedBy: 'games')]
     #[ORM\JoinColumn(nullable: true)]
     private ?Category $category = null;
+
+    #[ORM\ManyToMany(targetEntity: Support::class)]
+    private Collection $support;
+
+    public function __construct()
+    {
+        $this->support = new ArrayCollection();
+    }
 
     public function getId(): int|null
     {
@@ -76,6 +86,30 @@ class Game
     public function setCategory(?Category $category): static
     {
         $this->category = $category;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, support>
+     */
+    public function getSupport(): Collection
+    {
+        return $this->support;
+    }
+
+    public function addSupport(Support $support): static
+    {
+        if (!$this->support->contains($support)) {
+            $this->support->add($support);
+        }
+
+        return $this;
+    }
+
+    public function removeSupport(Support $support): static
+    {
+        $this->support->removeElement($support);
 
         return $this;
     }
